@@ -249,6 +249,8 @@ int main()
         // glActiveTexture(GL_TEXTURE1);
         // glBindTexture(GL_TEXTURE_2D, texture2);
 
+        lightPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
+        lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
         // 光源
         // activate shader
         lightShader.use();
@@ -272,6 +274,28 @@ int main()
         objectShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
         objectShader.setVec3("lightPos", lightPos);
         objectShader.setVec3("viewPos", camera.Position);
+        {
+            // 材质
+            objectShader.setVec3("material.ambient",  1.0f, 0.5f, 0.31f);
+            objectShader.setVec3("material.diffuse",  1.0f, 0.5f, 0.31f);
+            objectShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+            objectShader.setFloat("material.shininess", 32.0f);
+        }
+        {
+            glm::vec3 lightColor;
+            lightColor.x = sin(glfwGetTime() * 2.0f);
+            lightColor.y = sin(glfwGetTime() * 0.7f);
+            lightColor.z = sin(glfwGetTime() * 1.3f);
+
+            glm::vec3 diffuseColor = lightColor   * glm::vec3(0.5f); // 降低影响
+            glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // 很低的影响
+
+            // 灯光
+            objectShader.setVec3("light.ambient", ambientColor);
+            objectShader.setVec3("light.diffuse", diffuseColor);
+            objectShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f); 
+        }
+        
         // pass projection matrix to shader (note that in this case it could change every frame)
         objectShader.setMat4("projection", projection);
         // camera/view transformation
@@ -279,6 +303,7 @@ int main()
         // world transformation
         glm::mat4 objectModel = glm::mat4(1.0f);
         objectModel = glm::rotate(objectModel, 3.14f / 4.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+        objectModel = glm::rotate(objectModel, 3.14f / 6.0f, glm::vec3(0.0f, 0.0f, 1.0f));
         // objectModel = glm::scale(objectModel, glm::vec3(1.0f, 1.0f, 2.0f));
         objectShader.setMat4("model", objectModel);
         glBindVertexArray(VAO);
