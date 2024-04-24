@@ -203,22 +203,22 @@ int main()
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
 
-        // lightPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
-        // lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
+        lightPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
+        lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
         //  光源
-        //  activate shader
-        //  lightShader.use();
-        //  // pass projection matrix to shader (note that in this case it could change every frame)
-        //  lightShader.setMat4("projection", projection);
-        //  // camera/view transformation
-        //  lightShader.setMat4("view", view);
-        //  glm::mat4 lightModel = glm::mat4(1.0f);
-        //  lightModel = glm::translate(lightModel, lightPos);
-        //  lightModel = glm::scale(lightModel, glm::vec3(0.2f));
-        //  lightShader.setMat4("model", lightModel);
-        //  // render boxes
-        //  glBindVertexArray(lightVAO);
-        //  glDrawArrays(GL_TRIANGLES, 0, 36);
+         //activate shader
+         lightShader.use();
+         // pass projection matrix to shader (note that in this case it could change every frame)
+         lightShader.setMat4("projection", projection);
+         // camera/view transformation
+         lightShader.setMat4("view", view);
+         glm::mat4 lightModel = glm::mat4(1.0f);
+         lightModel = glm::translate(lightModel, lightPos);
+         lightModel = glm::scale(lightModel, glm::vec3(0.2f));
+         lightShader.setMat4("model", lightModel);
+         // render boxes
+         glBindVertexArray(lightVAO);
+         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // 物体
         objectShader.use();
@@ -238,11 +238,15 @@ int main()
             // objectShader.setVec3("light.diffuse", diffuseColor);
             // objectShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
-            // objectShader.setVec3("light.lightPos", lightPos);
+            objectShader.setVec3("light.position", lightPos);
             objectShader.setVec3("light.direction", -0.2f, -1.0f, -0.3f);
             objectShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
             objectShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
             objectShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+
+            objectShader.setFloat("light.constant",  1.0f);
+            objectShader.setFloat("light.linear",    0.09f);
+            objectShader.setFloat("light.quadratic", 0.032f);
         }
 
         {
