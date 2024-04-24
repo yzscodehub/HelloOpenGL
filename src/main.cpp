@@ -238,8 +238,10 @@ int main()
             // objectShader.setVec3("light.diffuse", diffuseColor);
             // objectShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
-            objectShader.setVec3("light.position", lightPos);
-            objectShader.setVec3("light.direction", -0.2f, -1.0f, -0.3f);
+            objectShader.setVec3("light.position", camera.Position);
+            objectShader.setVec3("light.direction", camera.Front);
+            objectShader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+            objectShader.setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
             objectShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
             objectShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
             objectShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
@@ -273,7 +275,7 @@ int main()
             // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
             model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * i;
+            float angle = 33.0f * i;
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.7f));
             objectShader.setMat4("model", model);
 
