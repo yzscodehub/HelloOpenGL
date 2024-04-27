@@ -132,7 +132,6 @@ int main()
         -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f};
 
     // world space positions of our cubes
-
     glm::vec3 cubePositions[] = {
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(2.0f, 5.0f, -15.0f),
@@ -144,6 +143,13 @@ int main()
         glm::vec3(1.5f, 2.0f, -2.5f),
         glm::vec3(1.5f, 0.2f, -1.5f),
         glm::vec3(-1.3f, 1.0f, -1.5f)};
+
+    // positions of the point lights
+    glm::vec3 pointLightPositions[] = {
+        glm::vec3(0.7f, 0.2f, 2.0f),
+        glm::vec3(2.3f, -3.3f, -4.0f),
+        glm::vec3(-4.0f, 2.0f, -12.0f),
+        glm::vec3(0.0f, 0.0f, -3.0f)};
 
     //
     unsigned int VAO;
@@ -203,27 +209,41 @@ int main()
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
 
-        lightPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
-        lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
+        //lightPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
+        //lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
         //  光源
-         //activate shader
-         lightShader.use();
-         // pass projection matrix to shader (note that in this case it could change every frame)
-         lightShader.setMat4("projection", projection);
-         // camera/view transformation
-         lightShader.setMat4("view", view);
-         glm::mat4 lightModel = glm::mat4(1.0f);
-         lightModel = glm::translate(lightModel, lightPos);
-         lightModel = glm::scale(lightModel, glm::vec3(0.2f));
-         lightShader.setMat4("model", lightModel);
-         // render boxes
-         glBindVertexArray(lightVAO);
-         glDrawArrays(GL_TRIANGLES, 0, 36);
+        // activate shader
+        lightShader.use();
+        // pass projection matrix to shader (note that in this case it could change every frame)
+        lightShader.setMat4("projection", projection);
+        // camera/view transformation
+        lightShader.setMat4("view", view);
+        glm::mat4 lightModel = glm::mat4(1.0f);
+        lightModel = glm::translate(lightModel, lightPos);
+        lightModel = glm::scale(lightModel, glm::vec3(0.2f));
+        lightShader.setMat4("model", lightModel);
+        // render boxes
+        glBindVertexArray(lightVAO);
+        for (unsigned int i = 0; i < 4; i++)
+         {
+             glm::mat4 model = glm::mat4(1.0f);
+             model = glm::translate(model, pointLightPositions[i]);
+             model = glm::scale(model, glm::vec3(0.2f)); // Make it a smaller cube
+             lightShader.setMat4("model", model);
+             glDrawArrays(GL_TRIANGLES, 0, 36);
+         }
 
         // 物体
         objectShader.use();
 
         objectShader.setVec3("viewPos", camera.Position);
+        {
+            // 材质
+            objectShader.setInt("material.diffuseMap", 0);
+            objectShader.setInt("material.specularMap", 1);
+            objectShader.setFloat("material.shininess", 32.0f);
+        }
+
         {
             // 灯光
             // glm::vec3 lightColor;
@@ -231,31 +251,54 @@ int main()
             // lightColor.y = sin(glfwGetTime() * 0.7f);
             // lightColor.z = sin(glfwGetTime() * 1.3f);
 
-            // glm::vec3 diffuseColor = lightColor   * glm::vec3(0.5f); // 降低影响
-            // glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // 很低的影响
-
-            // objectShader.setVec3("light.ambient", ambientColor);
-            // objectShader.setVec3("light.diffuse", diffuseColor);
-            // objectShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
-
-            objectShader.setVec3("light.position", camera.Position);
-            objectShader.setVec3("light.direction", camera.Front);
-            objectShader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
-            objectShader.setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
-            objectShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
-            objectShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
-            objectShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
-
-            objectShader.setFloat("light.constant",  1.0f);
-            objectShader.setFloat("light.linear",    0.09f);
-            objectShader.setFloat("light.quadratic", 0.032f);
-        }
-
-        {
-            // 材质
-            objectShader.setInt("material.diffuseMap", 0);
-            objectShader.setInt("material.specularMap", 1);
-            objectShader.setFloat("material.shininess", 64.0f);
+            // directional light
+            objectShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+            objectShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+            objectShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+            objectShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+            // point light 1
+            objectShader.setVec3("pointLights[0].position", pointLightPositions[0]);
+            objectShader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+            objectShader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+            objectShader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+            objectShader.setFloat("pointLights[0].constant", 1.0f);
+            objectShader.setFloat("pointLights[0].linear", 0.09f);
+            objectShader.setFloat("pointLights[0].quadratic", 0.032f);
+            // point light 2
+            objectShader.setVec3("pointLights[1].position", pointLightPositions[1]);
+            objectShader.setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
+            objectShader.setVec3("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
+            objectShader.setVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
+            objectShader.setFloat("pointLights[1].constant", 1.0f);
+            objectShader.setFloat("pointLights[1].linear", 0.09f);
+            objectShader.setFloat("pointLights[1].quadratic", 0.032f);
+            // point light 3
+            objectShader.setVec3("pointLights[2].position", pointLightPositions[2]);
+            objectShader.setVec3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
+            objectShader.setVec3("pointLights[2].diffuse", 0.8f, 0.8f, 0.8f);
+            objectShader.setVec3("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
+            objectShader.setFloat("pointLights[2].constant", 1.0f);
+            objectShader.setFloat("pointLights[2].linear", 0.09f);
+            objectShader.setFloat("pointLights[2].quadratic", 0.032f);
+            // point light 4
+            objectShader.setVec3("pointLights[3].position", pointLightPositions[3]);
+            objectShader.setVec3("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
+            objectShader.setVec3("pointLights[3].diffuse", 0.8f, 0.8f, 0.8f);
+            objectShader.setVec3("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
+            objectShader.setFloat("pointLights[3].constant", 1.0f);
+            objectShader.setFloat("pointLights[3].linear", 0.09f);
+            objectShader.setFloat("pointLights[3].quadratic", 0.032f);
+            // spotLight
+            objectShader.setVec3("spotLight.position", camera.Position);
+            objectShader.setVec3("spotLight.direction", camera.Front);
+            objectShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+            objectShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+            objectShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+            objectShader.setFloat("spotLight.constant", 1.0f);
+            objectShader.setFloat("spotLight.linear", 0.09f);
+            objectShader.setFloat("spotLight.quadratic", 0.032f);
+            objectShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+            objectShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
         }
 
         // pass projection matrix to shader (note that in this case it could change every frame)
@@ -275,7 +318,7 @@ int main()
             // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
             model = glm::translate(model, cubePositions[i]);
-            float angle = 33.0f * i;
+            float angle = 20.0f * i;
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.7f));
             objectShader.setMat4("model", model);
 

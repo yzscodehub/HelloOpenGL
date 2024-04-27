@@ -8,3 +8,6 @@
 	path = 3rdParty/stb
 	url = https://github.com/nothings/stb.git
 
+[submodule "3rdParty/assimp"]
+	path = 3rdParty/assimp
+	url = https://github.com/assimp/assimp.git
