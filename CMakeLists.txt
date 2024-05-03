@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 
 # STB 宏
-add_definitions(-DSTB_IMAGE_IMPLEMENTATION)
+#add_definitions(-DSTB_IMAGE_IMPLEMENTATION)
 
 
 set(THIRD_PARTY_DIR "3rdParty")
@@ -28,6 +28,7 @@ add_executable(${PROJECT_NAME} ${CPP_SOURCES})
 
 target_link_libraries(${PROJECT_NAME} 
     PUBLIC
-    glfw)
+    glfw
+    assimp)
 
 
