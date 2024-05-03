@@ -125,10 +125,6 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir){
 	return ambient + diffuse + specular;
 }
 
-uniform sampler2D texture_diffuse1;
-uniform sampler2D texture_specular1;
-
-
 void main(){
 	vec3 norm = normalize(Normal);
 	vec3 viewDir = normalize(viewPos - FragPos);
