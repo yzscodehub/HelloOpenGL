@@ -56,6 +56,10 @@ public:
         setupMesh();
     }
 
+    ~Mesh(){
+        glDeleteBuffers(1, &VAO);
+    }
+
     // render the mesh
     void Draw(Shader &shader) 
     {

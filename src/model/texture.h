@@ -5,10 +5,14 @@
 
 #include <stb/stb_image.h>
 
-unsigned int TextureFromFile(const char* path, const string& directory, bool gamma = false)
+unsigned int TextureFromFile(const char* path, const string& directory = string(), bool gamma = false)
 {
+    string dirPath = directory;
+    if(dirPath.empty()){
+        dirPath = "E:/WorkSpace/OpenGL/HelloOpenGL/assert";
+    }
     string filename = string(path);
-    filename = directory + '/' + filename;
+    filename = dirPath + '/' + filename;
 
     unsigned int textureID;
     glGenTextures(1, &textureID);
