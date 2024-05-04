@@ -5,13 +5,13 @@
 
 #include <stb/stb_image.h>
 
-unsigned int TextureFromFile(const char* path, const string& directory = string(), bool gamma = false)
+unsigned int TextureFromFile(const char* path, const std::string& directory = std::string(), uint32_t textureWrap = GL_REPEAT)
 {
-    string dirPath = directory;
+    std::string dirPath = directory;
     if(dirPath.empty()){
         dirPath = "E:/WorkSpace/OpenGL/HelloOpenGL/assert";
     }
-    string filename = string(path);
+    std::string filename = std::string(path);
     filename = dirPath + '/' + filename;
 
     unsigned int textureID;
@@ -33,8 +33,8 @@ unsigned int TextureFromFile(const char* path, const string& directory = string(
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, textureWrap);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, textureWrap);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 

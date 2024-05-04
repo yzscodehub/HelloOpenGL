@@ -1,9 +1,10 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <stb/stb_image.h>
-#include "BasicLighting.h"
-#include "DepthTesting.h"
-#include "StencilTesting.h"
+//#include "BasicLighting.h"
+//#include "DepthTesting.h"
+//#include "StencilTesting.h"
+#include "Blending.h"
 
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -53,7 +54,7 @@ int main()
     // -----------------------------
     //glEnable(GL_DEPTH_TEST);
 
-    std::unique_ptr<Base> pBase = std::make_unique<StencilTesting>();
+    std::unique_ptr<Base> pBase = std::make_unique<Blending>();
     pBase->Init();
 
     // render loop
