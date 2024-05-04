@@ -3,6 +3,7 @@
 #include <stb/stb_image.h>
 #include "BasicLighting.h"
 #include "DepthTesting.h"
+#include "StencilTesting.h"
 
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -52,7 +53,7 @@ int main()
     // -----------------------------
     //glEnable(GL_DEPTH_TEST);
 
-    std::unique_ptr<Base> pBase = std::make_unique<DepthTesting>();
+    std::unique_ptr<Base> pBase = std::make_unique<StencilTesting>();
     pBase->Init();
 
     // render loop
@@ -71,9 +72,6 @@ int main()
         
         // render
         // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
         pBase->Draw();
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
