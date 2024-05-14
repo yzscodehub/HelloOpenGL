@@ -6,7 +6,8 @@
 //#include "StencilTesting.h"
 //#include "Blending.h"
 // #include "FaceCulling.h"
-#include "Framebuffers.h"
+// #include "Framebuffers.h"
+#include "Cubemaps.h"
 
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -56,7 +57,7 @@ int main()
     // -----------------------------
     //glEnable(GL_DEPTH_TEST);
 
-    std::unique_ptr<Base> pBase = std::make_unique<Framebuffers>();
+    std::unique_ptr<Base> pBase = std::make_unique<Cubemaps>();
     pBase->Init();
 
     // render loop
